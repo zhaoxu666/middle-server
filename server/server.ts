@@ -5,6 +5,7 @@ import { useExpressServer } from "routing-controllers"
 import { Controllers } from './controllers/index'
 import { SwaggerConfig } from './config/swagger.conf'
 import { secretOrKey } from './config/config'
+import NodeManager from './utils/nodeManager'
 import expressJWT from 'express-jwt'
 
 const server = express();
@@ -16,6 +17,11 @@ expressSwagger(SwaggerConfig)
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 
+server.use('/', async (req, res) => {
+    let info = await NodeManager.GetNode('Redis.TempData')
+    res.send(JSON.stringify(info))
+})
+
 server.use(expressJWT({
     secret: secretOrKey,  // 签名的密钥 或 PublicKey
     algorithms: ['HS256']
@@ -25,10 +31,14 @@ server.use(expressJWT({
       next()
   })
 
+
+
 useExpressServer(server, {
   // register created express server in routing-controllers
   controllers: [...Controllers] // and configure it the way you need (controllers, validation, etc.)
 });
+
+
 
 server.listen(3000, function () {
     console.log('Example app listening on port 3000!')
