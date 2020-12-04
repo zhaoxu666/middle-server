@@ -30,7 +30,8 @@ let UserController = class UserController {
      * @returns {object} 200 - An array of user info
      * @returns {Error}  default - Unexpected error
      */
-    getAll() {
+    getAll(request) {
+        console.log(request.user);
         return this.userStore;
     }
     getOne(id) {
@@ -61,7 +62,8 @@ let UserController = class UserController {
     }
 };
 __decorate([
-    routing_controllers_1.Get("/users")
+    routing_controllers_1.Get("/users"),
+    __param(0, routing_controllers_1.Req())
 ], UserController.prototype, "getAll", null);
 __decorate([
     routing_controllers_1.Get("/users/:id"),

@@ -1,4 +1,4 @@
-import { JsonController, OnUndefined, Param, Body, Get, Post, Put, Delete } from "routing-controllers";
+import { JsonController, OnUndefined, Param, Body, Get, Post, Put, Delete, Req } from "routing-controllers";
 import User from '../../models/user';
 
 @JsonController()
@@ -22,7 +22,8 @@ export class UserController {
  */
 
   @Get("/users")
-  getAll() {
+  getAll(@Req() request:any) {
+    console.log(request.user)
     return this.userStore;
   }
 
@@ -38,6 +39,9 @@ export class UserController {
     let user = users.find(x => x.id == id);
     return user;
   }
+
+
+
 
   @Post("/users")
   post(@Body() user: any) {

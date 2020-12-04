@@ -300,3 +300,89 @@ server.listen(3000, function () {
 ### 查看Swagger
 启动项目，访问 `localhost:3000/swagger`
 
+
+## 集成 TOKEN
+
+### 安装依赖
+
+```shell
+    // 安装 jsonwebtoken 生成token express-jwt 验证token
+    npm install --save jsonwebtoken express-jwt
+
+    // ts声明文件
+    npm install --save-devv @types/jsonwebtoken @types/express-jwt
+```
+
+### 添加配置
+
+创建 `server/config/config.ts` 文件
+
+```ts
+export const secretOrKey = 'secret'
+```
+
+### 集成项目
+
+`server/server.ts`
+
+```ts
+import expressJWT from 'express-jwt'
+import { secretOrKey } from './config/config'
+
+// 添加中间件
+server.use(expressJWT({
+    secret: secretOrKey,  // 签名的密钥 或 PublicKey
+    algorithms: ['HS256']
+  }).unless({
+    path: ['/login/login']  // 指定路径不经过 Token 解析
+  }), (req:any, res: any, next:any) => {
+      next()
+  })
+
+```
+
+添加登录 Controller `server/controllers/modules/login.ts`
+
+```ts
+import { JsonController, OnUndefined, Param, Body, Get, Post, Put, Delete } from "routing-controllers";
+import UserInfo from '../../models/login'
+import jwt  from 'jsonwebtoken'
+import { secretOrKey } from '../../config/config'
+@JsonController()
+export class LoginController {
+    @Post("/login/login")
+    login(@Body() userInfo: UserInfo) {
+        let { username } = userInfo
+        if (username) {
+            let payload = {
+                id:123,
+                username: username
+            }
+            const token = jwt.sign(payload, secretOrKey, {expiresIn:  3600})
+            return { token: 'Bearer ' + token, code: 200 }
+        }
+    }
+
+}
+
+```
+
+将 `LoginController` 集成进入口文件中
+
+```ts
+// server/controllers/index.ts
+
+import { ListController } from './modules/list';
+import { UserController } from './modules/user';
+import { LoginController } from './modules/login';
+export const Controllers = [
+    ListController,
+    UserController,
+    LoginController
+]
+```
+### 使用
+
+用 `PostMan 先调用 http://localhost:3000/login/login` post接口，得到 token，
+在用获取到的token 调用 `http://localhost:3000/users` get接口，添加上请求头 `Authorization`: `获取的token值`
+验证通过会返回 所有用户信息
