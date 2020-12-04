@@ -9,9 +9,9 @@ interface RedisConfigDto {
 }
 
 export const RedisConfig : RedisConfigDto = {
-    ConfigCenterServiceAddress: 'http://10.255.98.182:6080/api/ConigCenter/GetNode',
-    ConfigCenterPassword: "abc!@#..6080",
+    ConfigCenterServiceAddress: 'http://xx.xxx.xxx.xxx:xxx/api/ConigCenter/GetNode',
+    ConfigCenterPassword: "xxxx",
     SystemType: 0,
-    NodeConfigChanged: "NodeConfigChanged",
-    RedisEventBus: 'Redis.EventBus'
+    NodeConfigChanged: "xxxx",
+    RedisEventBus: 'xxxxx'
 }
